@@ -56,3 +56,33 @@ This method is found to produce trees after only a few iterations, with training
 data containing 30.000 objects with 50 attributes.
 
 Details are on page 88 (8 in the pdf)
+
+
+# Noise
+Starts on page 92 (12 in the pdf)
+
+There can be different forms of noise in the dataset, misreading/wrong of
+attributes, and misclassification of the training data. Both of these will cause
+problems for the ID3 algorithm. Noise may cause attributes to be come
+inadequate, or lead to wrongly constructed trees. So changes are needed:
+
+    1) The algorithm should be able to work with inadequate attributes, noise
+       can cause even the most comprehensive set of attributes to be inadequate.
+    2) The algorithm should be able to decide if testing further attributes will
+       actually improve the tree, or if it just adds complexity. This way no
+       additional complexity is added to accommodate a single noise generated
+       special case.
+
+
+The first can be solved in two ways: either classify objects with the "chance"
+that they fit a class (for instance 0.8 if there is only two classes (0 and 1))
+or simply classify the object to the more numerous class. The first minimizes
+the mean squared error, while the latter minimizes the overall number of
+misclassifications.
+
+The second case can be solved by using a chi-square method to determine if a
+certain attribute is relevant or not.
+
+
+# Unknown Attribute Values
+Page 96 (16 in pdf)
