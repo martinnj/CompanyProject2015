@@ -1,0 +1,4 @@
+# Workspace related files.
+.RData
+.Rhistory
+titanic_workspace.RData
