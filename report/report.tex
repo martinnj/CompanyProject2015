@@ -1,8 +1,57 @@
-\documentclass[a4paper]{article}
-\usepackage[lang=en,grid]{kufront}
+\documentclass[a4paper,10pt]{article}
 
-% Use sans-serif font
+% Language and encoding packages
+\usepackage[utf8]{inputenc} % Accept utf8 encoded files.
+\usepackage[T1]{fontenc}    % Text encoding.
+\usepackage[english]{babel} % Mmultilingual for characters characters.
+
+%%% Figure realted packages
+\usepackage{caption}    % Caption customization.
+\usepackage{subcaption} % More caption tools.
+\usepackage{float}      % Improved options for floats/figs.
+\usepackage{minted}     % For syntax highlighting code.
+
+%%% Misc Packages
+\usepackage[lang=en,grid]{kufront} % KU Front page package.
+\usepackage{todonotes}             % For enabling the \todo command.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Type setting and own figures
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Use sans-serif font for KU logo.
 \renewcommand{\kufrontfont}{\sffamily}
+
+% Redefine \theFancyVerbLine to enable line numbers in minted.
+\renewcommand{\theFancyVerbLine}{\sffamily
+\textcolor[rgb]{0.5,0.5,1.0}{\scriptsize
+\oldstylenums{\arabic{FancyVerbLine}}}}
+
+% Line used for the abstract.
+% Usage: \HRule
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+% Displays a centered image with caption and label.
+% usage: \graphicc{width}{file}{caption}{label}
+\newcommand{\graphicc}[4]{\begin{figure}[H] \centering
+            \includegraphics[width={#1\textwidth}, keepaspectratio=true]{{#2}}
+            \caption{{#3}} \label{#4} \end{figure}}
+
+% Load some code from a file and display it in a pretty figure.
+% usage: \codefig{language}{file}{firstline}{lastline}{caption}{label}
+\newcommand{\codefig}[6]
+{
+\begin{figure}[H]
+    \inputminted[firstnumber=#3,firstline=#3,lastline=#4,
+                 linenos=true]{#1}{#2}
+    \caption{#5 (#2)}
+    \label{code:#6}
+\end{figure}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Meta information for the KU front page.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \title{User Behavior Analysis Using Decision Trees}
 \author{\Large Martin Nicklas Jørgensen \quad {\ttfamily\large tzk173@alumni.ku.dk}}
@@ -10,10 +59,29 @@
 \project{\mdseries\LARGE Company Project \# 2015-1428}
 \supervisor{Supervisor: Mikkel Rønne Jakobsen \quad {\ttfamily\large mikkelrj@di.ku.dk}}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Start the actual document.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{document}
 
+% Create the front page.
 \begin{titlepage}
 \maketitle
 \end{titlepage}
+
+% Insert an abstract.
+\input{00_abstract}
+\newpage
+
+\tableofcontents
+
+% actual report sections.
+\input{00_intro}                % Inroduction to the project.
+\input{01_companystructure}     % Description of the company structure and workflow.
+\input{02_problem_desc}         % Description of the problem.
+\input{03_problem_analysis}     % Analysis and solution of the problem area.
+\input{04_competencies_methods} % Competencies and methods.
+\input{05_conclusion}           % Final conclusion.
 
 \end{document}
