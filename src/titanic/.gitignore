@@ -2,3 +2,4 @@
 .RData
 .Rhistory
 titanic_workspace.RData
+*_prediction.csv
