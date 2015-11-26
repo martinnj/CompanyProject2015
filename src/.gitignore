@@ -1,2 +1,4 @@
 #Do not include the Simplesite repo inside this one.
 data-analysis
+
+*.Rhistory
