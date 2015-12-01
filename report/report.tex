@@ -1,5 +1,9 @@
 \documentclass[a4paper,10pt]{article}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Package selection
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % Language and encoding packages
 \usepackage[utf8]{inputenc} % Accept utf8 encoded files.
 \usepackage[T1]{fontenc}    % Text encoding.
@@ -10,15 +14,32 @@
 \usepackage{subcaption} % More caption tools.
 \usepackage{float}      % Improved options for floats/figs.
 \usepackage{minted}     % For syntax highlighting code.
+\usepackage{tikz}       % For creating diagrams.
 
 %%% Misc Packages
 \usepackage[lang=en,grid]{kufront} % KU Front page package.
 \usepackage{todonotes}             % For enabling the \todo command.
 \usepackage{mdwlist}               % For itemize* and enumerate* environments.
+\usepackage{pdflscape}             % Allows landscape pages.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Type setting and own figures
+%%% Type setting and own commands
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% What parts of the tikz package do we want to load?
+\usetikzlibrary{arrows,shapes,positioning,shadows,trees}
+
+%Styleset for organization diagram.
+\tikzset{
+  basic/.style  = {draw, text width=2cm, drop shadow, font=\sffamily, rectangle},
+  board/.style   = {basic, rounded corners=2pt, thin, align=center,
+                   fill=white!30},
+  officer/.style = {basic, rounded corners=6pt, thin,align=center, fill=white!60,
+                   text width=8em},
+  department/.style = {basic, rounded corners=6pt, thin,align=center, fill=white!60,
+                   text width=8em},
+  employee/.style = {basic, thin, align=left, fill=pink!60, text width=6.5em}
+}
 
 % Use sans-serif font for KU logo.
 \renewcommand{\kufrontfont}{\sffamily}
