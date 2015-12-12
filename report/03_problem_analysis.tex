@@ -1,1 +1,127 @@
 \section{Problem Analysis}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Available Data}
+
+The basis for the analysis is 2 datasets created by Simplesite:
+\texttt{EngagementData} \& \texttt{CustomerJourney}. Table
+\ref{tab:engdatalayout} and Table \ref{tab:cjdatalayout} names the features of
+each dataset and what they represent. Both datasets contain users created
+between September 1st 2015 and September 15 2015. \todo{This window should maybe
+be expanded a little for more data.}
+
+\begin{table}[H]
+	\centering
+	\begin{tabularx}{\textwidth}{l|X}
+		\textbf{Attribute Name} & \textbf{Attribute Data}                                                                                                     \\ \hline
+		\textit{islogins1}                       & Bool, true if: one or more logins for the user.                                                            \\
+		\textit{islogins2}                       & Bool, true if: two or more logins for the user.                                                            \\
+		\textit{islogins3}                       & Bool, true if: three or more logins for the user.                                                          \\
+		\textit{islogins4}                       & Bool, true if: four or more logins for the user.                                                           \\
+		\textit{isedit30m}                       & Bool, true if: User edited site within 30 minutes of creation.                                             \\
+		\textit{isedit24h}                       & Bool, true if: User edited site within 24 hours of creation (excluding the first 30 minutes).              \\
+		\textit{isaddpage30m}                    & Bool, true if: User added a new page within 30 minutes of creation.                                        \\
+		\textit{isaddpage24h}                    & Bool, true if: User added a new page within 24 hours of creation (excluding the first 30 minutes).         \\
+		\textit{isimgupload30m}                  & Bool, true if: User uploaded their own image within 30 minutes of creation.                                \\
+		\textit{isimgupload24h}                  & Bool, true if: User uploaded their own image within 24 hours of creation (excluding the first 30 minutes). \\
+		\textit{iseditdesign30m}                 & Bool, true if: User edited site within 30 minutes of creation.                                             \\
+		\textit{iseditdesign24h}                 & Bool, true if: User edited site within 24 hours of creation (excluding the first 30 minutes).              \\
+		\textit{customerid}                      & Integer value with the customers unique ID.                                                                \\
+		\textit{marketname}                      & String with the market the user came from (US, TR, DK etc.)                                                \\
+		\textit{siteverkey}                      & String with what version of the site the user is created in (US, TR, DK etc.)                              \\
+		\textit{ispayer}                         & Bool, true if: The customer have a paid subscription.                                                      \\
+		\textit{culturekey}                      & String with language information for the site (en-US, fr-FR etc.)                                          \\
+		\textit{iso14}                           & Bool used by marketing.
+	\end{tabularx}
+	\caption{Features found in the \texttt{EngagementData} dataset.}
+	\label{tab:engdatalayout}
+\end{table}
+
+
+\begin{table}[H]
+	\centering
+	\begin{tabularx}{\textwidth}{l|X}
+		\textbf{Attribute Name} & \textbf{Attribute Data}                                                                      \\ \hline
+		\textit{customerid}     & Integer value with the customers unique ID.                                                  \\
+		\textit{logins14}       & Integer, number of times the customer logged in the first 14 days (week 1-2 after creation). \\
+		\textit{logisnw2w4}     & Integer, number of times the customer logged in in week 3-4 after creation.                  \\
+		\textit{edits14}        & Integer, number of times the customer edited a page within the first 14 days.                \\
+		\textit{iscjtrial}      & Bool, true if: Always true, everyone starts as a trial.                                      \\
+		\textit{iscjonboarded}  & Bool, true if: edits14 $\geq 1$.                                                             \\
+		\textit{iscjactivated}  & Bool, true if: edits14 $\geq 3$.                                                             \\
+		\textit{iscjengaged}    & Bool, true if: edits14 $\geq 6$ and logins14 $\geq 2$.                                       \\
+		\textit{iscjinvested}   & Bool, true if: edits14 $\geq 15$ and logins14 $\geq 6$.                                      \\
+		\textit{iscjretained}   & Bool, true if: logisnw2w4 $\geq 1$.                                                          \\
+		\textit{isimgupload1d}  & Bool, true if: Customer uploaded an image within the first 24 hours of being created.        \\
+		\textit{iseditdesign1d} & Bool, true if: Customer edited the design within the first 24 hours of being created.        \\
+		\textit{isaddpage1d}    & Bool, true if: Customer added a new page within the first 24 hours of being created.         \\
+		\textit{isedit1d}       & Bool, true if: Customer edited a page within the first 24 hours of being created.           
+	\end{tabularx}
+	\caption{Features found in the \texttt{CustomerJourney} dataset.}
+	\label{tab:cjdatalayout}
+\end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Pruning Datasets}
+
+The initial goal is to find customers who are retained (\textit{iscjretained} =
+\texttt{True}) and see if there is some pattern, that Simplesite can try to
+guide other customers down in order to increase the number of retained
+customers. With this in mind there is some attributes of the datasets that will
+not be helpful, either because they cannot be controlled/changed, or because
+they do not make sense. The following is a list of attributes removed from the
+\texttt{EngeagementData} dataset during work, along with the reason for the
+removal.
+
+\begin{itemize*}
+  \item \textit{islogins1} : Removed since it is always true for all customers.
+
+	\item \textit{islogins2} : Removed because the definition of a retained
+	      customer requires one or more logins, so this must always be true.
+
+	\item \textit{islogins3} : Same as \textit{islogins2}.
+
+	\item \textit{islogins4} : Same as \textit{islogins2}.
+
+	\item \textit{marketname} : Removed since we are unable to get a customer from
+	      a different market, we are insterested in variable we can change for
+	      each customer.
+
+	\item \textit{siteverkey} : Same as \textit{marketname}.
+
+	\item \textit{ispayer} : Removed because it is an alternative target variable,
+	      it does not say anything about how the user behaves, other than they are
+	      indeed a good customer.
+
+	\item \textit{culturekey} : \textit{marketname}.
+
+	\item \textit{iso14} : Value used by marketing. \todo{is o14 usefull? Clear up with Morten.}
+\end{itemize*}
+
+\noindent The following is a list of attributes removed from the \texttt{CustomerJourney}
+dataset during work, along with the reason for the removal.
+
+\begin{itemize*}
+	\item \textit{logins14} : Removed because initial tests showed high bias. For
+	      a ctree\footnote{Conditional Inference Tree.} of depth 4, the three top
+	      levels was occupied with choices regarding logins14.
+
+	\item \textit{logisnw2w4} : Removed since this attribute is in the definition
+	      of our target variable \textit{iscjretained}.
+
+	\item \textit{iscjtrial} : Removed since it is always true.
+
+	\item \textit{iscjonboarded} : Removed since it serves as an alternative target
+	      variable, and is set by us, it does not say anything about the user
+	      behaviour that is not already present.
+
+	\item \textit{iscjengaged} : Same as \textit{iscjonboarded}.
+	\item \textit{iscjinvested} : Same as \textit{iscjonboarded}.
+\end{itemize*}
+
+In both datasets the \textit{customerid} attribute is kept in each dataset, even
+though it cannot be used as a feature for analysis since each customer have a
+unique ID and thus will not yield any patterns, since it can be used to join the
+two datasets together.

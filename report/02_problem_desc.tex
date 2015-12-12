@@ -8,22 +8,41 @@ that sign up either don't become paying customers, or simple make a site and
 stop using it after a few days.
 
 Simplesite wishes to map the life-cycle of customers in an attempt to find out
-how paying (good) users use their site, as well as look at the life-cycles of
+how good users (users that are \textit{retained}, ie. have logins 3-4 weeks
+after they are created) use their site, as well as look at the life-cycles of
 the many free or abandoned customers. They hope to discover what, if any, the
 significant differences is in the different lifecycles. The goal is to attempt
-to guide new customers down the paths that are known to be ``good'' and hopefully
-detect if customers are stuck or have forgotten about their website.
+to guide new customers down the paths that are known to be ``good'' and
+hopefully detect if customers are stuck or have forgotten about their website.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Requirements}
-\todo[inline]{This is garbage, fix it.}
-Simplesite have already started working on creating datasets and attempting to
-map variables. In order work with their existing code I was given access to a
-code repository which I can commit to.
 
-The existing code is written in R\footnote{\url{https://www.r-project.org/}} and
-as such, the code I will be producing will also be written in R. Furthermore, in
-order to easy human understanding of the data models worked out, decision trees
-(and related machinelearning models) was chosen as the model. Decision trees,
-once constructed offer an intuitive way to look at what parameters lead to
-different outcomes. They also closely resemble a number of customer life-cycles
-combined into a graph.
+Simplesite have already created some code in
+R\footnote{\url{https://www.r-project.org/}} so any continued work should also
+be done in the R language. I have also been added to a Github repository with
+already populated with analytics code and a preferred structure and coding style
+that should be adhered to.
+
+Two datasets are also available containing different information gathered from
+the live system. These two datasets should form the basis for all the
+dataanalysis performed. An additional dataset is being constructed during the
+project, but due to the time it takes to populate it with enough observations to
+be meaningful it might not be finished before the project is over.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Success Criteria}
+
+The project have a number of success criteria that should all be fulfilled to
+some degree.
+
+\begin{enumerate*}
+  \item A model for classifying customers are created.
+  \item New knowledge about customers lifecycles are acquired from the model.
+        More preferably, do \textit{retained} customers have something in common.
+  \item A prototype R script that can automatically build/create the model from
+  		  new customer data should be created.
+  \item A method for using the model should be designed or reasoned about.
+\end{enumerate*}

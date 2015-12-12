@@ -9,38 +9,40 @@
 \usepackage[T1]{fontenc}    % Text encoding.
 \usepackage[english]{babel} % Mmultilingual for characters characters.
 
-%%% Figure realted packages
+%%% Figure and table related packages
 \usepackage{caption}    % Caption customization.
 \usepackage{subcaption} % More caption tools.
 \usepackage{float}      % Improved options for floats/figs.
 \usepackage{minted}     % For syntax highlighting code.
-\usepackage{tikz}       % For creating diagrams.
+\usepackage{tabularx}   % Allows us to use tables with \textwidth width.
+%\usepackage{tikz}      % For creating diagrams.
 
 %%% Misc Packages
 \usepackage[lang=en,grid]{kufront} % KU Front page package.
 \usepackage{todonotes}             % For enabling the \todo command.
 \usepackage{mdwlist}               % For itemize* and enumerate* environments.
 \usepackage{pdflscape}             % Allows landscape pages.
-\usepackage{url}                   % Formatting for URLs
+\usepackage{url}                   % Formatting for URLs.
+\usepackage{a4wide}                % Decreases margin widths.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Type setting and own commands
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % What parts of the tikz package do we want to load?
-\usetikzlibrary{arrows,shapes,positioning,shadows,trees}
+%\usetikzlibrary{arrows,shapes,positioning,shadows,trees}
 
 %Styleset for organization diagram.
-\tikzset{
-  basic/.style  = {draw, text width=2cm, drop shadow, font=\sffamily, rectangle},
-  board/.style   = {basic, rounded corners=2pt, thin, align=center,
-                   fill=white!30},
-  officer/.style = {basic, rounded corners=6pt, thin,align=center, fill=white!60,
-                   text width=8em},
-  department/.style = {basic, rounded corners=6pt, thin,align=center, fill=white!60,
-                   text width=8em},
-  employee/.style = {basic, thin, align=left, fill=pink!60, text width=6.5em}
-}
+% \tikzset{
+%   basic/.style  = {draw, text width=2cm, drop shadow, font=\sffamily, rectangle},
+%   board/.style   = {basic, rounded corners=2pt, thin, align=center,
+%                    fill=white!30},
+%   officer/.style = {basic, rounded corners=6pt, thin,align=center, fill=white!60,
+%                    text width=8em},
+%   department/.style = {basic, rounded corners=6pt, thin,align=center, fill=white!60,
+%                    text width=8em},
+%   employee/.style = {basic, thin, align=left, fill=pink!60, text width=6.5em}
+% }
 
 % Use sans-serif font for KU logo.
 \renewcommand{\kufrontfont}{\sffamily}
@@ -104,7 +106,8 @@
 \input{01_companystructure}     % Description of the company structure and workflow.
 \input{02_problem_desc}         % Description of the problem.
 \input{03_problem_analysis}     % Analysis and solution of the problem area.
-\input{04_competencies_methods} % Competencies and methods.
-\input{05_conclusion}           % Final conclusion.
+\input{04_results}              % Selected solution and work done. Includes results of work.
+\input{05_competencies_methods} % Competencies and methods.
+\input{06_conclusion}           % Final conclusion.
 
 \end{document}
