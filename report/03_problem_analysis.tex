@@ -2,7 +2,7 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Available Data}
+\subsection{Available Datasets}
 
 The basis for the analysis is 2 datasets created by Simplesite:
 \texttt{EngagementData} \& \texttt{CustomerJourney}. Table
@@ -64,7 +64,8 @@ be expanded a little for more data.}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Pruning Datasets}
+\subsection{Dataset Pruning}
+\label{sec:datasetpruning}
 
 The initial goal is to find customers who are retained (\textit{iscjretained} =
 \texttt{True}) and see if there is some pattern, that Simplesite can try to
@@ -104,20 +105,21 @@ removal.
 dataset during work, along with the reason for the removal.
 
 \begin{itemize*}
-	\item \textit{logins14} : Removed because initial tests showed high bias. For
-	      a ctree\footnote{Conditional Inference Tree.} of depth 4, the three top
-	      levels was occupied with choices regarding logins14.
+	%\item \textit{logins14} : Removed because initial tests showed high bias. For
+	%      a ctree\footnote{Conditional Inference Tree.} of depth 4, the three top
+	%      levels was occupied with choices regarding logins14.
 
 	\item \textit{logisnw2w4} : Removed since this attribute is in the definition
 	      of our target variable \textit{iscjretained}.
 
 	\item \textit{iscjtrial} : Removed since it is always true.
 
-	\item \textit{iscjonboarded} : Removed since it serves as an alternative target
-	      variable, and is set by us, it does not say anything about the user
-	      behaviour that is not already present.
+	\item \textit{iscjonboarded} : Removed since it serves as an alternative
+	      target variable, and is set by us, it does not say anything about the
+	      user behaviour that is not already present.
 
 	\item \textit{iscjengaged} : Same as \textit{iscjonboarded}.
+
 	\item \textit{iscjinvested} : Same as \textit{iscjonboarded}.
 \end{itemize*}
 
@@ -125,3 +127,172 @@ In both datasets the \textit{customerid} attribute is kept in each dataset, even
 though it cannot be used as a feature for analysis since each customer have a
 unique ID and thus will not yield any patterns, since it can be used to join the
 two datasets together.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Tree Type}
+
+While researching R, two distinct type of dicision trees came up, an
+implementation of regular decision trees that closely follow the method
+described in \cite{breiman1}, as well as conditional inference
+trees\cite{hothorn2006unbiased}, which I will shorten to \textit{ctree} in this
+report.
+
+Both models produce binary trees that can be used to solve classification
+problems. Each node in the tree represents a variable and each edge out of the
+node contains a ``case'' that tells something about the variable (is it
+true/false, $\geq 5$, and so forth). Each leaf of the tree is then a class,
+there can be several leafs with the same class, they just represent different
+characteristics of the same class.
+
+The main difference between a regular decision tree and a ctree is how it is
+created. A regular decision tree will choose to split using information measures
+such as seen in Quinlan et. al.\cite[p. 89]{quinlan1986induction}, whereas the
+ctree framework will split based on the relationship between the variables and
+the covariates. \todo{Write a better explanation without bloating it.(See
+\cite{hothorn2006unbiased}.)}
+
+\todo[inline]{Write more here. And create code for the experiment.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Plotting}
+\label{sec:treetypeplot}
+
+Since a big part of the project is for Simplesite to learn about their customers
+behaviour on the site, as much as letting a computer learn it, the readability
+of the created models became a criteria as well. In order to guage how easy it
+was to get information about the models created by the trees I plotted models
+created on the same data, using different functions. Figure
+\ref{fig:plotcompare} shows the result for the different models and functions.
+
+\begin{figure}
+	\centering
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{img/plot_compare_ctree_0}
+    \caption{The default plot of a \texttt{ctree} model.}
+    \label{fig:plotcompare0}
+  \end{subfigure}
+  ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{img/plot_compare_ctree_1}
+    \caption{Plot of the same model using a customized plot function.}
+    \label{fig:plotcompare1}
+  \end{subfigure}
+
+
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{img/plot_compare_rpart_0}
+    \caption{The default plot of a \texttt{rpart} model.}
+    \label{fig:plotcompare2}
+  \end{subfigure}
+  ~
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{img/plot_compare_rpart_1}
+    \caption{Plot of the same model using \texttt{fancyRpartPlot}}
+    \label{fig:plotcompare3}
+  \end{subfigure}
+
+  \caption{A side by side view of the different plots produced for the \texttt{
+    rpart} and \texttt{ctree} models respectively. Code for creating the figures
+    can be found in Appendix \ref{app:code:plotcompare}.}
+  \label{fig:plotcompare}
+\end{figure}
+
+While which figure is easiest to read can be subjective, I have a few
+observations about the figures:
+\begin{itemize*}
+	\item[\ref{fig:plotcompare0}] Displays the most information of the different
+		figures but seems to have issues with being scaled down due to amount of
+		information in display.
+
+	\item[\ref{fig:plotcompare1}] Shows most of the information of
+	  \ref{fig:plotcompare0} without overflowing.
+
+	\item[\ref{fig:plotcompare2}] Only shows the edges without showing decisions.
+
+	\item[\ref{fig:plotcompare3}] Displays much of the same information as
+	  \ref{fig:plotcompare0} and \ref{fig:plotcompare1} but also seems to have
+	  problems with scaling.
+\end{itemize*}
+
+While all the examples in Figure \ref{fig:plotcompare} are very simple it does
+illustrate nicely that some of the plot functions will have trouble later when
+the tree grows. Based on the above examples I would use the \texttt{ctree} model
+with the plot function from Figure \ref{fig:plotcompare1}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Model Precision}
+\label{sec:treetypeprecision}
+
+In order to make sure that we do not loose any ``precision'' by selecting the
+\texttt{ctree} model over the normal decision tree, I performed a number of
+tests with each of the models in order to determine if this would indeed be the
+case.
+
+For the tests I performed 5-fold cross validation and different maximum tree
+depths and recorded the mean precision for each model. The dataset in question
+was the combined dataset as described in Section \ref{sec:datasetpruning}
+(excluding the customerid column.) The code for this test can be seen in
+Appendix \ref{app:code:treecompare}.
+
+\begin{table}[]
+	\centering
+	\begin{tabular}{l|l|l}
+		\textbf{Max Depth} & \textbf{\texttt{rpart} Accuracy} & \textbf{\texttt{ctree} Accuracy} \\ \hline
+		\textit{4}         & 0.942799                         & 0.9427990                        \\
+		\textit{8}         & 0.942799                         & 0.9431958                        \\
+		\textit{12}        & 0.942799                         & 0.9436638                       
+	\end{tabular}
+	\caption{The mean accuracy for the different 5-fold cross validation runs.}
+	\label{tab:treecompare}
+\end{table}
+
+The results shown in Table \ref{tab:treecompare} indicates that for our
+particular dataset, the accuracy difference for the two models have a very
+similar performance in terms of accuracy for our dataset. They both predict
+correctly in around $94,3\%$ of the cases with a difference of less that
+$0,1\%$ between the best and worst performer.
+
+An interesting observation from the data above is that the \texttt{rpart} model
+have the same accuracy for all three runs indicating that the model created does
+not change even when it is allowed to grow more complex. After plotting models
+from each step, I discovered that it did not grow beyond a depth of 2 and based
+itself solely on the \texttt{logins14} variable, similarly to what could be seen
+in Figure \ref{fig:plotcompare3}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Choosing a Model}
+
+Based on the two criteria highlighted in in Sections \ref{sec:treetypeplot} and
+\ref{sec:treetypeprecision}, I selected to go with the \texttt{ctree} package,
+because it was easier for me to read the information the model was created on
+without sacrificing any precision compared to the traditional decision tree
+implemented in \texttt{rapart}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Analysis}
+
+For this section the two datasets \texttt{EngagementData} \&
+\texttt{CustomerJourney} have been joined on the \textit{customerid} attribute,
+into one dataset after which the \textit{customerid} attribute was removed. This
+is the dataset used for the remainder of this section unless otherwise stated.
+
+% In order to gain understanding on what variables might be important later I
+% created a random forest using the methods provided in the \texttt{randomForest}
+% R-package, this package implements Breimans Random Forest algorithm as described
+% in \cite{breiman2001random}. This random forest implementation can also
+% calculate a number of importance measures for each variable (attribute in the
+% dataset) which is what we are actually interested in, this is the mean decrease
+% in accuracy if a variable is removed as well as the mean decrease in Gini
+% impurity when the variable is used. \todo{Verify that this is indeed the case.}
+% Figure \ref{fig:rfimportance} shows a plot of the 2 importance measures
+% calculated by the random forest using \textit{iscjretained} as the target
+% variable and all other attributes as predictors.
+
+% \graphicc{1}{img/forrest_measures.png}{caption}{fig:rfimportance}
+
+% \todo[inline]{Since this is using regular decision trees, maybe we should use
+% that instead of ctrees?}
