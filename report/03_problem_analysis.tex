@@ -8,8 +8,10 @@ The basis for the analysis is 2 datasets created by Simplesite:
 \texttt{EngagementData} \& \texttt{CustomerJourney}. Table
 \ref{tab:engdatalayout} and Table \ref{tab:cjdatalayout} names the features of
 each dataset and what they represent. Both datasets contain users created
-between September 1st 2015 and September 15 2015. \todo{This window should maybe
-be expanded a little for more data.}
+between September 1st 2015 and September 30 2015. \todo{This window can be
+expanded as long as the user it at least a month old.} The data is recorded for
+all users afterwards as well, but the larger dataset also increases memory
+consumption, and makes it unwieldy.
 
 \begin{table}[H]
 	\centering
@@ -31,8 +33,7 @@ be expanded a little for more data.}
 		\textit{marketname}                      & String with the market the user came from (US, TR, DK etc.)                                                \\
 		\textit{siteverkey}                      & String with what version of the site the user is created in (US, TR, DK etc.)                              \\
 		\textit{ispayer}                         & Bool, true if: The customer have a paid subscription.                                                      \\
-		\textit{culturekey}                      & String with language information for the site (en-US, fr-FR etc.)                                          \\
-		\textit{iso14}                           & Bool used by marketing.
+		\textit{culturekey}                      & String with language information for the site (en-US, fr-FR etc.)
 	\end{tabularx}
 	\caption{Features found in the \texttt{EngagementData} dataset.}
 	\label{tab:engdatalayout}
@@ -68,8 +69,8 @@ be expanded a little for more data.}
 \label{sec:datasetpruning}
 
 The initial goal is to find customers who are retained (\textit{iscjretained} =
-\texttt{True}) and see if there is some pattern, that Simplesite can try to
-guide other customers down in order to increase the number of retained
+\texttt{True}) and see if there is some pattern, that Simplesite can use to try
+to guide other customers down in order to increase the number of retained
 customers. With this in mind there is some attributes of the datasets that will
 not be helpful, either because they cannot be controlled/changed, or because
 they do not make sense. The following is a list of attributes removed from the
@@ -96,13 +97,12 @@ removal.
 	      it does not say anything about how the user behaves, other than they are
 	      indeed a good customer.
 
-	\item \textit{culturekey} : \textit{marketname}.
-
-	\item \textit{iso14} : Value used by marketing. \todo{is o14 usefull? Clear up with Morten.}
+	\item \textit{culturekey} : Same as \textit{marketname}.
 \end{itemize*}
 
-\noindent The following is a list of attributes removed from the \texttt{CustomerJourney}
-dataset during work, along with the reason for the removal.
+\noindent The following is a list of attributes removed from the
+\texttt{CustomerJourney} dataset during work, along with the reason for the
+removal.
 
 \begin{itemize*}
 	%\item \textit{logins14} : Removed because initial tests showed high bias. For
@@ -273,26 +273,44 @@ implemented in \texttt{rapart}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Analysis}
+\subsection{Model Analysis}
 
 For this section the two datasets \texttt{EngagementData} \&
 \texttt{CustomerJourney} have been joined on the \textit{customerid} attribute,
 into one dataset after which the \textit{customerid} attribute was removed. This
 is the dataset used for the remainder of this section unless otherwise stated.
 
-% In order to gain understanding on what variables might be important later I
-% created a random forest using the methods provided in the \texttt{randomForest}
-% R-package, this package implements Breimans Random Forest algorithm as described
-% in \cite{breiman2001random}. This random forest implementation can also
-% calculate a number of importance measures for each variable (attribute in the
-% dataset) which is what we are actually interested in, this is the mean decrease
-% in accuracy if a variable is removed as well as the mean decrease in Gini
-% impurity when the variable is used. \todo{Verify that this is indeed the case.}
-% Figure \ref{fig:rfimportance} shows a plot of the 2 importance measures
-% calculated by the random forest using \textit{iscjretained} as the target
-% variable and all other attributes as predictors.
 
-% \graphicc{1}{img/forrest_measures.png}{caption}{fig:rfimportance}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Dataset Features}
 
-% \todo[inline]{Since this is using regular decision trees, maybe we should use
-% that instead of ctrees?}
+In section \ref{sec:datasetpruning} I discarded a number of features in the
+dataset and reasoned about why they would not be usable for our purpose. This
+leaves 14 features as well as the target variable, \texttt{iscjretained}. While
+all of these features might be usable
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Formula and Tree Depth}
+
+\begin{table}[]
+	\centering
+	\begin{tabular}{l|l|l}
+		\textbf{Formula}                           & \textbf{Max Depth} & \textbf{Mean Accuracy} \\ \hline
+		\texttt{iscjretained ~ .}                  & $4$                & 0.9427990              \\
+		                                           & $6$                & 0.9429672              \\ % <-- second highest accuracy
+		                                           & $8$                & 0.9431958              \\ % <-- highest accuracy
+		\texttt{iscjretained ~ edits14}            & $4$                & 0.9350055              \\
+		                                           & $6$                & 0.9350227              \\
+		                                           & $8$                & 0.9350119              \\
+		\texttt{iscjretained ~ logins14}           & $4$                & 0.9427990              \\
+		                                           & $6$                & 0.9427990              \\
+		                                           & $8$                & 0.9427990              \\
+		\texttt{iscjretained ~ edits14 + logins14} & $4$                & 0.9427990              \\
+		                                           & $6$                & 0.9428465              \\
+		                                           & $8$                & 0.9429414             
+	\end{tabular}
+	\caption{Mean accuracy of different formulas and tree depths using 5-fold cross
+		validation.}
+	\label{tab:formulacompare}
+\end{table}
