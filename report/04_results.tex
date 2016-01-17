@@ -1,1 +1,170 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
+\label{sec:results}
+
+This section will contain the results of the project, both in term of the final
+models created for classifying whether or not a customer will be retained, but
+also recommendations for future work that could improve the solution.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Modelling Results}
+
+In Section \ref{sec:eval} we saw that when removing the bias towards unretained
+observations from the dataset, the overall accuracy of the model suffers
+severly, with that  in mind, I chose to train the future models on the full
+dataset, since this dataset also contains what the user have already ``done'',
+even if a customer is mistakenly identifyed as a user that will not be retained,
+Simplesite can check via this data that they do not accidentally send out emails
+with tips and tricks that the customer already know.
+
+By using the full training dataset and formula with the highest precision from
+Table \ref{tab:formulacompare} I have run the tests by training a model on the
+entire dataset (witout cross validation) and tested the resulting model on the
+full test set. In order to make sure that the model did not overfit, I tested
+with three different maximum depths to see if there would be any significant
+difference due to overfitting, the code for running this experiment can be found
+in Appendix \ref{app:results} Figure \ref{app:code:results}.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{l|l}
+    \textbf{Maximum Depth} & \textbf{Accuracy} \\ \hline
+    $4$                    & $92.84039$ \%     \\
+    $6$                    & $92.84846$ \%     \\
+    $8$                    & $92.75823$ \%
+  \end{tabular}
+  \caption{The results of the final datarun when training on the full training
+    set and trying to predict the entire test set.}
+  \label{tab:results00}
+\end{table}
+
+Table \ref{tab:results00} shows that the difference between allowing the tree to
+grow $6$ levels deep, compared to $4$ in terms of accuracy is less than one
+hunredth of a percent. The results also show that allowing the tree to grow to
+$8$ levels deep causes a slight loss of precision that is most likely due to an
+overfitting for the training data.
+
+Due to the size of the trees I was only able to include the tree with a maximum
+depth of $4$ in the report, since the larger ones does not fit on A4 paper or on
+my screen\footnote{Displaying them on a $2560 \times 1440$p screen results in
+nodes and leaves overlapping.} but they can be reproduced by running the code
+from Figure \ref{app:code:results}. Figure \ref{fig:results00} shows the
+resulting model when drawn on the screen. Each node in the drawing corresponds
+to an attribute, or a choice, and each edge out of the nodes corresponds to a
+value or statement about the attribute. The leafs contain 2 pieces of
+information; the $n$ variable which is the number of observations in the
+training set that belongs to this leaf, as well as the propability of the
+observations in that leaf to be false (unretained). If we use the leftmost leaf
+as an example, there is $275873$ observations that belong in this leaf, and the
+propability that any of the observations that land there is unretained is $1$,
+with a $0$ propability that they are retained.
+
+\begin{landscape}
+  \graphicc{1.5}{img/results_00}{The comditional inference tree produced by the
+    code when using a maximum depth of 4.}{fig:results00}
+\end{landscape}
+
+Figure \ref{fig:results00} also shows that the \textit{logins14} variable is
+taking up a lot of the nodes. This could indicate (based on our data) that one
+of the most important factors in retaining a user, is to make them form the
+habbit of logging in. Users that log in more than $12$ times during the first 14
+days have a propability of at least $0.6$ to be retained.
+
+In order to learn if any other variables can impact the customer retention I
+performed a test with the \textit{logins14} attribute removed from both the
+training and test datasets. (This moves us back into the data preparation phase
+of the CRISP-DM process). The accuracy data from the test can be seen in Table
+\ref{tab:results01}.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{l|l}
+    \textbf{Maximum Depth} & \textbf{Accuracy} \\ \hline
+    $4$                    & $91.79051$ \%     \\
+    $6$                    & $91.74852$ \%     \\
+    $8$                    & $91.74388$ \%
+  \end{tabular}
+  \caption{The results of the final data run when training on the full training
+    set excluding the \textit{logins14 variable} and trying to predict the
+    entire test set.}
+  \label{tab:results01}
+\end{table}
+
+The result of excluding \textit{logins14} is a drop in accuracy of around $1$
+\%, but when looking at the tree produced we might gain more knowledge. The tree
+produced by limiting the depth to $4$ can be seen in Figure \ref{fig:results01}.
+
+\begin{landscape}
+  \graphicc{1.5}{img/results_01}{The conditional inference tree produced by the
+    code when using a maximum depth of 4 and exluding the \textit{logins14}
+    attribute.}{fig:results01}
+\end{landscape}
+
+Looking at Figure \ref{fig:results01} we can see a lot more of the attributes
+have been selected, but also that the propability of retention seem to be rather
+low in most of the leafs. The 4 leafs with the best retention span from $0.3$ to
+$0.7$ and all come from users that have more than $16$ edits within the first 14
+days of their time with Simplesite.
+
+Based on the two resulting trees in Figure \ref{fig:results00} and Figure
+\ref{fig:results01}, it is hard to pinpoint a series of specific actions that
+makes retained/retainable users easy to see. The two most significant traits (as
+we could see by the numbers in Table \ref{tab:formulacompare}) seems to be the
+number of logins as well as edits during the first 14 days of the users time
+with Simplesite.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Continued Work}
+\label{sec:future}
+
+
+\subsubsection{Dataset}
+
+In order to further improve the models a new dataset could be compiled, based on
+this project it looks like ``counter'' attributes give a lot more information
+than boolean attributes; a dataset that also counts the number of image uploads
+or edits within a more fine grained time window might shed more light on the
+behvaiour differences of retained and unretained customers.
+
+
+\subsubsection{Automation}
+
+This project includes code that allows an R program to load data from a clear-
+text file and use it to automatically create a model from the dataset.
+Simplesite already have code that allows the programs to pull the data directly
+from the database, so as long as the script is run regularly it can pull fresh
+data and create an up-to-date model.
+
+A similar approach could be used for uploading the predictions to a database
+after the model is created and the new user data have been acquired. Since the
+model is part of a new program to send out more personalized emails to
+customers, it can be used to find customers that have very low login or edit
+counts, or are somehow deviating from the patterns we see in retained customers.
+When the model classifies a customer that can be prompted by an email, it can use
+the same SQL driver it used to get user data to add the customer to the email
+queue.
+
+The following procedure illustrates this idea:
+\begin{enumerate*}
+  \item Get a training set of customers that are at least a month old.
+  \item Get a set of customers to predict on, these could be created 14 days ago
+    and to the date of this execution.
+  \item Create a conditional inference tree model based on the training set.
+  \item Use the model to predict which of the new customers are ``on the right track''.
+  \item Discard these customers, we don't wish to interfere with them.
+  \item For the remaining customers in the list: based on knowledge from the
+    database, add them to the email queue and send them an appropriate email,
+    for example: ``Did you know you can create a free image gallery on your
+    Simplesite?'' or similar.
+\end{enumerate*}
+
+The implementation and regular use of this procedure would hopefully lead to
+increased retention of customers with free accounts, and with some adoption and
+a change of the target variable also be able to predict on whether or not a
+customer will become apaying customer. This model could be applied at a later
+stage so new users are fed to the current model that predicts retention, and
+customers that are retained can be fed into a model that predict on becoming a
+paying customer, further expanding the idea of guiding potential customers along
+a behavior that is known to have a high propability of becoming a paying
+customer.

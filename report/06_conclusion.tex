@@ -1,1 +1,56 @@
 \section{Conclusion}
+
+After a product change Simplesite was facing a rapid influx of users for their
+free services whom did not stay active on the site after 14 days of use. In
+order to gather some knowledge, Simplesite whished to build a decision tree based
+model that could be used to predict if a user would be retained after the 14
+days.
+
+This business problem shows strong reminisence to classic data science problems
+such as analysing churn for a company. In order to leverage this, an overview of
+the CRISP-DM process was achieved, this process was then followed and the steps
+were described along with the results for each phase. This work includes both
+experiments with different types of decision trees, different parameters for the
+models and using a dataset that have been tweaked to contain the same amount of
+retained and unretained customers.
+
+With reference to the success criteria in Section \ref{sec:success}, work have
+been done for all the entries on the list. A model have been created based on
+the available data, and a number of R scripts have been written that can
+recreate the model automatically and on request. Furthermore a number of tools
+have been created for manually validating the quality of the model using
+$k$-fold cross validation.
+
+While Section \ref{sec:results} showed a number of different models, very little
+was learned about the life-cycle of a retained customer as opposed to an
+unretained customer. The most significant difference between the two is the
+number of logins and edits the user performs. Based on this data it looks like
+getting the customer to engage with the service regularly via logins and edits
+is what greatly increases the probability of the customer being retained.
+
+In Section \ref{sec:future} I also outlined a rough design for using the model
+for an automated workflow, that could be used to automatically draw customer
+data from the database once every other week. The older customer data can then
+be used to determine if any of the new customers should be contacted to
+``activate'' them. The script should place an email in an SQL based email queue
+to be sent out to the relevant customers.
+
+In the same section I also briefly described an idea for a new dataset that
+might help the model become better at predicting the customers retention based
+on their behaviour. The dataset would also help Simplesite gain a better
+understanding of what separates retained and unretained customers by increasing
+the accuracy of the model making it more representative for how customers use
+the service.
+
+Furthermore, a number of different parameters for the model was tested and the
+results were documented for future reference. An attempt at manipulating the
+dataset to obtain greater predictive accuracy for retained users was also
+attempted, but ultimately was not useable due to lower mean accuracy.
+
+The project is to serve as a prototype for how Simplesite can work with decision
+trees and data collected from their customers, with a proper version to be
+implemented by the companies own developers at a later time. The current
+datasets are created from data logs Simplesite already had available, in the
+future they will populate a dataset with event data extracted specifically for
+the purpose of analysing the user behaviour. When this dataset is finished this
+report and project can be used as a framework for how to work with the data.

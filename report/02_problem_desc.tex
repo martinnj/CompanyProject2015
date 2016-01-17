@@ -1,38 +1,44 @@
 \section{Problem Description}
+\label{sec:probdesc}
 
-Before 2014 123Hjemmeside offered paid subscription that allowed customers to
-make and host a website using the provided CMS. Customers could get a time-
-limited trial but would have to buy a subscription afterwards. If a cusotmer
-stopped paying their subscription or did not wish to continue after their trial,
-their website would be kept offline for a short while, but would be deleted
-afterwards.
+Before 2014 123hjemmeside offered paid subscription service that allowed
+customers to create and host a website using the provided CMS. Customers could
+get a time-limited trial but would have to buy a subscription to continue using
+the service afterwards. If a customer stopped paying their subscription or did
+not wish to continue after their trial, their website would be kept offline for
+a short while, then deleted.
 
 When 123hjemmeside changed its name to Simplesite in 2014 it also changed its
-business model. They went from being purely paid to allowing everyone to create
-as many websites as they wished for free, with no time limitation. The free
-subscriptions give access to most functions of the CMS, excluding things like
-personal domains, webshops and puts a limit on the number of images a website
-can contain. In order to use these features a customer will have to sign up for
-a paid subscription. This model of free and premium products is known as
-freemium (\cite[p. 6]{bekkelund2011succeeding} and
-\cite[p. 1]{pujol2010freemium}).
+business model. They went from being purely paid subscription service to
+allowing everyone to create as many websites as they wished for free, with no
+time limitation. People using the free subscriptions have access to most
+functions of the CMS, excluding functions like personal domains and webshops as
+well as putting a limit on the number of images a website can contain. In order
+to use these features, a customer will have to sign up for a paid subscription.
+This model of free and premium products is known as freemium (\cite[p.
+6]{bekkelund2011succeeding} and \cite[p. 1]{pujol2010freemium}).
 
-After the change of model Simplesite could see a huge increase in the number of
+After the change of model, Simplesite could see a huge increase in the number of
 free websites being created, but not a corresponding increase in paid
 subscriptions. They came up with the idea of recording how customers use the
-site and use the data to build decision trees (\cite{breiman1984classification}
-and \cite{quinlan1986induction}). The decision trees should not only be to be
-able to classify customers based on behaviour, but also to let Simplesite learn
-what events in the users life cycle that increase the chance of them becoming
-paying customers.
+site and gather the data to build decision trees
+(\cite{breiman1984classification} and \cite{quinlan1986induction}). The decision
+trees should not only be used to classify customers based on behaviour, but also
+to let Simplesite learn what events in the users' life cycle that increase the
+chance of them becoming paying customers.
 
 Initially Simplesite is interested in exploring if there is any differences
-between the users that still have logins 15 or more days after they are created
-(Simplesite calls these customers \textit{retained}) and customers that simply
-make a site and leave or forget about it. This mapping of important ``actions''
-that some customers take is supposed to be used later in a mail procedure that
-will automatically send out emails to new customers prompting them to perform
-these actions that are known to cause customers to be retained.
+between the users that still log in 15 or more days after they have created
+their account (Simplesite calls these customers \textit{retained}) and customers
+that simply make a site and leave or forget about it. This mapping of important
+``actions'' that some customers take is supposed to be used later in a mail
+procedure that will automatically send out emails to new customers prompting
+them to perform these actions that are known to cause customers to be retained.
+
+The longterm goal is to be able to send out personalized emails to customers in
+an attempt to keep the active on the site. These emails could contain tips and
+tricls for using a feature that the user have not yet touched ot to attempt to
+prompt them into writing a new page or blog entry.
 
 % Simplesite changed their subscription service to a so called freemium model
 % during 2014. This model means that everyone can have a website for free, and it
@@ -61,19 +67,20 @@ to.
 
 Two datasets are also available containing different information gathered from
 the live system. These two datasets should form the basis for all the
-dataanalysis performed. An additional dataset is being constructed during the
+data analysis performed. An additional dataset is being constructed during the
 project, but due to the time it takes to populate it with enough observations to
-be meaningful it might not be finished before the project is over.
+be meaningful, it was not be finished before the project ended.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Success Criteria}
+\label{sec:success}
 
 The project have 4 success criteria (that should all be fulfilled to some
 degree):
 
 \begin{enumerate*}
-  \item A decision tree model for classifying customers created.
+  \item A decision tree model for classifying customers should be created.
   \item New knowledge about customer lifecycles acquired from the model,
         in particular, do \textit{retained} customers have something in common.
   \item A prototype R script that can automatically build/create the model

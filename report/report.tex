@@ -66,12 +66,13 @@
 % usage: \codefig{language}{file}{firstline}{lastline}{caption}{label}
 \newcommand{\codefig}[6]
 {
-\begin{figure}[H]
+%\begin{figure}[H]
     \inputminted[firstnumber=#3,firstline=#3,lastline=#4,
                  linenos=true]{#1}{#2}
-    \caption{#5 (#2)}
-    \label{code:#6}
-\end{figure}
+    \captionof{listing}{#5 (#2)\label{#6}}
+%    \caption{#5 (#2)}
+%    \label{#6}
+%\end{figure}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -100,6 +101,7 @@
 \newpage
 
 \tableofcontents
+\newpage
 
 % actual report sections.
 \input{00_intro}                % Inroduction to the project.
@@ -111,8 +113,12 @@
 \input{06_conclusion}           % Final conclusion.
 
 
+\newpage
 \appendix
 \bibliographystyle{abbrv}
 \bibliography{citations}
+
+\input{07_confusion}
+\input{08_code}
 
 \end{document}

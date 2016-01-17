@@ -1,0 +1,153 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Modelling}
+
+During the modelling phase the models are applied to the dataset constructed in
+the data preparation phase, and parameters are adjusted to give the best results
+possible. Some models might require that the data is in a specific form, so it
+might be necessary to step back to the data preparation phase.
+
+\subsubsection{Tree Type}
+
+While researching R, two distinct type of decision trees came up; an
+implementation of regular decision trees that closely follow the method
+described in \cite{breiman1984classification}, as well as conditional inference
+trees\cite{hothorn2006unbiased}, which I will shorten to \textit{ctree} in this
+report.
+
+Both models produce binary trees that can be used to solve classification
+problems. Each node in the tree represents a variable and each edge out of the
+node contains a ``case'' that tells something about the variable (is it
+true/false, $\geq 5$, and so forth). Each leaf of the tree is representing a
+class, and there can be several leafs with the same class, they just represent
+different characteristics of the same class.
+
+The main difference between a regular decision tree and a ctree is how it is
+created. A regular decision tree will choose to split using information measures
+such as seen in Quinlan et. al.\cite[p. 89]{quinlan1986induction}, whereas the
+ctree framework will split based on the relationship between the target feature
+and the covariates based on conditional distribution. Given a fresh dataset, a
+regular decision tree will make the first split on the attribute where the
+resulting split gives the two largest possible subsets on each edge. A
+conditional inferance tree on the other hand will split on the
+covariate/attribute with the strongest relation to the target variable.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Model Type Precision}
+\label{sec:treetypeprecision}
+
+In order to select which tree type to use I performed an experiment that used
+5-fold cross validation\cite[p. 32]{bishop2006pattern} to test the accuracy of
+the models for different depths. The dataset used for this experiment was the
+combination of the \textit{EngagementData} and \textit{CustomerJourney}
+datasets, as described in Section \ref{sec:datasetpruning} (excluding the
+customerid column.) The code for this test can be seen in Appendix
+\ref{app:treecompare} Figure \ref{app:code:treecompare}.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l|l|l}
+        \textbf{Max Depth} & \textbf{\texttt{rpart} Accuracy} & \textbf{\texttt{ctree} Accuracy} \\ \hline
+        \textit{4}         & $94.2799$ \%                     & $94.27990$ \%                    \\
+        \textit{8}         & $94.2799$ \%                     & $94.31958$ \%                    \\
+        \textit{12}        & $94.2799$ \%                     & $94.36638$ \%
+    \end{tabular}
+    \caption{The mean accuracy for the different 5-fold cross validation runs.}
+    \label{tab:treecompare}
+\end{table}
+
+The results shown in Table \ref{tab:treecompare} indicates that for our
+particular dataset, the accuracy difference for the two models is very
+insignificant. They both predict correctly in around $94,3\%$ of the cases with
+a difference of less that $0,1\%$ between the best and worst performer.
+
+An interesting observation from the data above is that the \texttt{rpart} model
+have the same accuracy for all three runs indicating that the model created does
+not change even when it is allowed to grow more complex. After plotting the
+models from each step, I discovered that it did not grow beyond a depth of 2 and
+based itself solely on the \texttt{logins14} variable.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Choosing a Model}
+
+Based on the two criteria highlighted in in Section \ref{sec:treetypeprecision},
+I selected to go with the \texttt{ctree} package, due to the better accuracy in
+the experiment and the fact that the model seem to present more options when you
+allow it to grow more complex. This is a desirable feature since the project is
+not just about creating a model in the computer, but also to let Simplesite
+learn about their customers behaviour.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Formula and Tree Depth}
+\label{sec:formcompare}
+
+In section \ref{sec:datasetpruning} I discarded a number of features in the
+dataset and reasoned about why they would not be usable for our purpose. This
+leaves 14 features as well as the target variable, \texttt{iscjretained}.
+Initial work with the trees showed that the algorithm used for construction of
+the ctrees based a lot of splits on the \textit{edits14} and \textit{logins14}
+features. This makes sense because they are the only numeric variables in the
+dataset, the rest of the variables are booleans that indicate if some event
+transpired. This allows the algorithm to make splits based on whether or not the
+variable is within some range (\texttt{logins14} $\geq 5$ for example.), these
+splits can be performed repeatedly to partition the set into more granular
+partitions based on a single variable. On the other hand with a boolean
+attribute you cannot partition more than once (is it true/false) since
+repartioning the true group based on weither the attribute is true or false
+again does not make a difference.
+
+In order to test the impact that these two features have on the accuracy on the
+model I performed a number of 5-fold cross validation runs using different
+formulas (See the formulas in Table \ref{tab:formulacompare}) for the tree
+creation as well as different maximum depths for the ctrees. The code for the
+experiment can be seen in Appendix \ref{app:formulacomparison} Figure
+\ref{app:code:formulacomparison}. The results of the experiment can be seen in
+Table \ref{tab:formulacompare}. The formulas are read as \texttt{target\_varible
+\~{} features\_to\_predict\_from}, the topmost formula with a dot instead of the
+feature list simply means ``all features''.
+
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l|l|l}
+        \textbf{Formula}                              & \textbf{Max Depth} & \textbf{Mean Accuracy} \\ \hline
+        \texttt{iscjretained \~{} .}                  & $4$                & $94.27990$ \%          \\
+                                                      & $6$                & $94.29672$ \%          \\ % <-- second highest accuracy
+                                                      & $8$                & $94.31958$ \%          \\ \hline % <-- highest accuracy
+        \texttt{iscjretained \~{} edits14}            & $4$                & $93.50055$ \%          \\
+                                                      & $6$                & $93.50227$ \%          \\
+                                                      & $8$                & $93.50119$ \%          \\ \hline
+        \texttt{iscjretained \~{} logins14}           & $4$                & $94.27990$ \%          \\
+                                                      & $6$                & $94.27990$ \%          \\
+                                                      & $8$                & $94.27990$ \%          \\ \hline
+        \texttt{iscjretained \~{} edits14 + logins14} & $4$                & $94.27990$ \%          \\
+                                                      & $6$                & $94.28465$ \%          \\
+                                                      & $8$                & $94.29414$ \%
+    \end{tabular}
+    \caption{Mean accuracy of different formulas and tree depths using 5-fold cross
+        validation.}
+    \label{tab:formulacompare}
+\end{table}
+
+The results show that while it makes a small positive difference percentage wise
+to include all the features, it is less than 1\% which as a percentage is not
+too much, but the model is supposed to be applied to all new users once it is
+fully implemented, which is more than 400.000 users monthly (Simplesite
+confirmed that the september dataset I have been using is representative of the
+number of new pages), where 1\% is still 400 potential customers that could've
+been helped to stay active but might now be lost, it might also be 400 customers
+that indended to pay, but due to extra email might now consider to find a
+provider that sends less unsolicited\footnote{The email is not strictly
+requested, but the customer have agreed to recieve emails from time to time.}
+emails.
+
+Furthermore using all the features also lets Simplesite learn more about what
+actions (apart form logins and edits) that the models show to be related to
+retaining customers.
+
+From the results in Table \ref{tab:formulacompare} also shows that increasing
+the maximum tree depth with $2$ raises the accuracy by approximately $0.02$\%.
+plotting out the trees in question shows that it is because the
+\textit{logins14} and \textit{edits14} features dominate the first many levels
+of the tree, so the remaining boolean features only show on the lower levels.

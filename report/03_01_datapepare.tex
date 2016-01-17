@@ -1,0 +1,73 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Data Preparation}
+\label{sec:datasetpruning}
+
+The data preparation phase is where all the data weaknesses we found in the
+previous section is removed and all the raw data is collected into the final
+dataset. At the end of this phase the dataset should contain all the data the
+models will need and be ready to be ``fed'' to the model for training and
+validation.
+
+The initial goal is to find customers who are retained (\textit{iscjretained} =
+\texttt{True}), and to see if there is some pattern that Simplesite can use to
+try to guide other customers down, in order to increase the number of retained
+customers. With this in mind there is some attributes of the datasets that will
+not be helpful, either because they cannot be controlled/changed, or because
+they do not make sense. The following is a list of attributes removed from the
+\texttt{EngeagementData} dataset during work, along with the reason for the
+removal.
+
+\begin{itemize*}
+    \item \textit{islogins1} : Removed because the knowledge about number of
+          logins is contained in the \textit{logins14} feature from the
+          \textit{CustomerJourney} dataset.
+
+    \item \textit{islogins2} : Same as \textit{islogins1}.
+
+    \item \textit{islogins3} : Same as \textit{islogins1}.
+
+    \item \textit{islogins4} : Same as \textit{islogins1}.
+
+    \item \textit{marketname} : Removed since we are unable to get a customer from
+          a different market, we are insterested in variable we can change for
+          each customer.
+
+    \item \textit{siteverkey} : Same as \textit{marketname}.
+
+    \item \textit{ispayer} : Removed because it is an alternative target variable,
+          it does not say anything about how the user behaves, other than they are
+          indeed a good customer.
+
+    \item \textit{culturekey} : Same as \textit{marketname}.
+\end{itemize*}
+
+\noindent The following is a list of attributes removed from the
+\texttt{CustomerJourney} dataset during work, along with the reason for the
+removal.
+
+\begin{itemize*}
+    %\item \textit{logins14} : Removed because initial tests showed high bias. For
+    %      a ctree\footnote{Conditional Inference Tree.} of depth 4, the three top
+    %      levels was occupied with choices regarding logins14.
+
+    \item \textit{logisnw2w4} : Removed since this attribute is in the definition
+          of our target variable \textit{iscjretained}.
+
+    \item \textit{iscjtrial} : Removed since it is always true.
+
+    \item \textit{iscjonboarded} : Removed since it serves as an alternative
+          target variable. It is set by Simplesite and does not say anything
+          about the user behaviour that is not already present in other
+          attributes.
+
+    \item \textit{iscjengaged} : Same as \textit{iscjonboarded}.
+
+    \item \textit{iscjinvested} : Same as \textit{iscjonboarded}.
+\end{itemize*}
+
+In both datasets the \textit{customerid} attribute is kept and used to join them
+into one training dataset, after this join operation the \textit{customerid}
+attribute is removed.
+
+The files \textit{src/dataset\_training.tsv} and \textit{src/dataset\_test.tsv}
+contains the data from these final versions of the datasets.

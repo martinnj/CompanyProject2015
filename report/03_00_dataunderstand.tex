@@ -1,0 +1,75 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Data Understanding}
+
+
+The data understanding phase of data science is the second phase. During this
+phase you look into what data is available and collect whatever information
+might be relevant for the data science problem. During this phase you will also
+identify data quality problems and gain familiarity with the data in order to
+help form a better hypothesis. It is worth noting that weaknesses in the dataset
+are not removed until the next phase, data preparation, so in order to make the
+report more readable, any arguments for removal or change will be listed in
+Section \ref{sec:datasetpruning} instead of here.
+
+The basis for the analysis is 2 datasets created by Simplesite:
+\texttt{EngagementData} \& \texttt{CustomerJourney}. Table
+\ref{tab:engdatalayout} and Table \ref{tab:cjdatalayout} names the features of
+each dataset and what they represent. Both datasets contain users created
+between September 1st 2015 and September 30 2015. The data is recorded for all
+users after this point as well, but the larger dataset also increases memory
+consumption, and makes it unwieldy. The training datasets both contain $463716$
+observations, each corresponding to a user created in this timespan.
+
+Another copy of each dataset was created from the database pulling data from
+users created between October 1st 2015 and October 30 2015. These datasets
+contains $495390$ observations and will be used as test data.
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l|X}
+        \textbf{Attribute Name} & \textbf{Attribute Data}                                                                                                     \\ \hline
+        \textit{islogins1}                       & Bool, true if: one or more logins for the user.                                                            \\
+        \textit{islogins2}                       & Bool, true if: two or more logins for the user.                                                            \\
+        \textit{islogins3}                       & Bool, true if: three or more logins for the user.                                                          \\
+        \textit{islogins4}                       & Bool, true if: four or more logins for the user.                                                           \\
+        \textit{isedit30m}                       & Bool, true if: User edited site within 30 minutes of creation.                                             \\
+        \textit{isedit24h}                       & Bool, true if: User edited site within 24 hours of creation (excluding the first 30 minutes).              \\
+        \textit{isaddpage30m}                    & Bool, true if: User added a new page within 30 minutes of creation.                                        \\
+        \textit{isaddpage24h}                    & Bool, true if: User added a new page within 24 hours of creation (excluding the first 30 minutes).         \\
+        \textit{isimgupload30m}                  & Bool, true if: User uploaded their own image within 30 minutes of creation.                                \\
+        \textit{isimgupload24h}                  & Bool, true if: User uploaded their own image within 24 hours of creation (excluding the first 30 minutes). \\
+        \textit{iseditdesign30m}                 & Bool, true if: User edited site within 30 minutes of creation.                                             \\
+        \textit{iseditdesign24h}                 & Bool, true if: User edited site within 24 hours of creation (excluding the first 30 minutes).              \\
+        \textit{customerid}                      & Integer value with the customers unique ID.                                                                \\
+        \textit{marketname}                      & String with the market the user came from (US, TR, DK etc.)                                                \\
+        \textit{siteverkey}                      & String with what version of the site the user is created in (US, TR, DK etc.)                              \\
+        \textit{ispayer}                         & Bool, true if: The customer have a paid subscription.                                                      \\
+        \textit{culturekey}                      & String with language information for the site (en-US, fr-FR etc.)
+    \end{tabularx}
+    \caption{Features found in the \texttt{EngagementData} dataset.}
+    \label{tab:engdatalayout}
+\end{table}
+
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l|X}
+        \textbf{Attribute Name} & \textbf{Attribute Data}                                                                      \\ \hline
+        \textit{customerid}     & Integer value with the customers unique ID.                                                  \\
+        \textit{logins14}       & Integer, number of times the customer logged in the first 14 days (week 1-2 after creation). \\
+        \textit{logisnw2w4}     & Integer, number of times the customer logged in in week 3-4 after creation.                  \\
+        \textit{edits14}        & Integer, number of times the customer edited a page within the first 14 days.                \\
+        \textit{iscjtrial}      & Bool, true if: Always true, everyone starts as a trial.                                      \\
+        \textit{iscjonboarded}  & Bool, true if: edits14 $\geq 1$.                                                             \\
+        \textit{iscjactivated}  & Bool, true if: edits14 $\geq 3$.                                                             \\
+        \textit{iscjengaged}    & Bool, true if: edits14 $\geq 6$ and logins14 $\geq 2$.                                       \\
+        \textit{iscjinvested}   & Bool, true if: edits14 $\geq 15$ and logins14 $\geq 6$.                                      \\
+        \textit{iscjretained}   & Bool, true if: logisnw2w4 $\geq 1$.                                                          \\
+        \textit{isimgupload1d}  & Bool, true if: Customer uploaded an image within the first 24 hours of being created.        \\
+        \textit{iseditdesign1d} & Bool, true if: Customer edited the design within the first 24 hours of being created.        \\
+        \textit{isaddpage1d}    & Bool, true if: Customer added a new page within the first 24 hours of being created.         \\
+        \textit{isedit1d}       & Bool, true if: Customer edited a page within the first 24 hours of being created.           
+    \end{tabularx}
+    \caption{Features found in the \texttt{CustomerJourney} dataset.}
+    \label{tab:cjdatalayout}
+\end{table}
