@@ -1,0 +1,242 @@
+\documentclass[12pt,aspectratio=1610]{beamer}
+% adjust the aspect ratio to match the local hardware
+
+\input{input/frederiksberg_setup}
+
+\input{input/recommended_packages}
+
+% Displays a centered image with caption and label.
+% usage: \graphicc{width}{file}{caption}{label}
+\newcommand{\graphicc}[4]{\begin{figure}[H] \centering
+            \includegraphics[width={#1\textwidth}, keepaspectratio=true]{{#2}}
+            \caption{{#3}} \label{#4} \end{figure}}
+
+%\input{input/biber_bibliography}
+%\bibliography{my_bibliography}
+
+% graphicx settings
+%\graphicspath{
+%	{some/path/where/my/figures/are/}
+%	{another/path/}
+%	}
+%\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title[Company Project]{User Behavior Analysis Using Decision Trees}
+
+\author{Martin Nicklas Jørgensen}
+	
+\institute{Department of Computer Science}
+
+\date{\today}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+
+\frame[plain]{\titlepage}
+
+\section{Disposition}
+\begin{frame}{Disposition}
+	\begin{itemize}[<+->]
+		\item Introduction 
+		\item Problem Analysis
+		\item Results \& Conclusion
+		\item Questions
+	\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+\begin{frame}{Simplesite ApS}{Introduction}
+	\begin{itemize}
+		\item Hosts and sells a website CMS.
+		\item Founded in 2001 as \textit{Elk Consulting ApS}, later \textit{123hjemmeside ApS} and now \textit{Simplesite ApS}.
+		\item 20-49 employees globally.
+		\item $400.000$ new websites every month.
+		\item $80.000$ paying subscribers.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Problem Description}{Introduction}
+	\begin{itemize}
+		\item After the change to freemium, a huge increase in new free users was observed.
+		\item The number of paying users did not increase comparetively.
+		\item Many users stop being active after a few days.
+		\item Using Data Science, is it possible to find a pattern in how users who stay are using the site?
+	\end{itemize}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Problem Analysis}
+
+\begin{frame}{CRSIP-DM}{Problem Analysis}
+	\graphicc{0.55}{img/wiki_crisp}{Diagram of the CRISP-DM method. Image source: Wikimedia Foundation.}{fig:crisp}
+\end{frame}
+
+\begin{frame}{Business Understanding}{Problem Analysis}
+	\begin{itemize}
+		\item Some users do not stay active for very long, even on the free product.
+		\item Can we figure out what makes users stay?
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Data Understanding \& Preparation}{Problem Analysis}
+	\begin{itemize}
+		\item \texttt{EngagementData} datasets.
+		\item \texttt{CustomerJourney} datasets.
+		\item Features are removed from the datasets if they are derivative or not relevant.
+		\item Datasets are merged into a single dataset.
+		\item Data from Sep. 2015 are used for training. ($463716$ observations)
+		\item Data from Oct. 2015 are used for test. ($495390$ observations)
+		\item Final dataset have 15 features one of which is the target variable \textit{iscjretained}.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Modelling - Tree Type}{Problem Analysis}
+	\begin{table}[H]
+	    \centering
+	    \begin{tabular}{l|l|l}
+	        \textbf{Max Depth} & \textbf{\texttt{rpart} Accuracy} & \textbf{\texttt{ctree} Accuracy} \\ \hline
+	        \textit{4}         & $94.2799$ \%                     & $94.27990$ \%                    \\
+	        \textit{8}         & $94.2799$ \%                     & $94.31958$ \%                    \\
+	        \textit{12}        & $94.2799$ \%                     & $94.36638$ \%
+	    \end{tabular}
+	    \caption{The mean accuracy for the different 5-fold cross validation runs.}
+	    \label{tab:treecompare}
+	\end{table}
+\end{frame}
+
+\begin{frame}{Modelling - Formula \& Depth}{Problem Analysis}
+	\begin{table}[H]
+	    \centering
+	    \begin{tabular}{l|l|l}
+	        \textbf{Formula}                              & \textbf{Max Depth} & \textbf{Mean Accuracy} \\ \hline
+	        \texttt{iscjretained \~{} .}                  & $4$                & $94.27990$ \%          \\
+	                                                      & $6$                & $94.29672$ \%          \\ % <-- second highest accuracy
+	                                                      & $8$                & $94.31958$ \%          \\ \hline % <-- highest accuracy
+	        \texttt{iscjretained \~{} edits14}            & $4$                & $93.50055$ \%          \\
+	                                                      & $6$                & $93.50227$ \%          \\
+	                                                      & $8$                & $93.50119$ \%          \\ \hline
+	        \texttt{iscjretained \~{} logins14}           & $4$                & $94.27990$ \%          \\
+	                                                      & $6$                & $94.27990$ \%          \\
+	                                                      & $8$                & $94.27990$ \%          \\ \hline
+	        \texttt{iscjretained \~{} edits14 + logins14} & $4$                & $94.27990$ \%          \\
+	                                                      & $6$                & $94.28465$ \%          \\
+	                                                      & $8$                & $94.29414$ \%
+	    \end{tabular}
+	    \caption{Mean accuracy of different formulas and tree depths using 5-fold cross
+	        validation.}
+	    \label{tab:formulacompare}
+	\end{table}
+\end{frame}
+
+\begin{frame}{Evaluation - Dataset Bias}{Problem Analysis}
+	\begin{table}[H]
+	  \centering
+	  \begin{tabular}{lll}
+	    \textbf{Dataset}  & \texttt{TRUE} & \texttt{FALSE} \\ \hline
+	    \textit{Training} & $30358$       & $433358$       \\
+	    \textit{Test}     & $40731$       & $454659$       \\
+	    \textit{Equal}    & $30358$       &  $30358$
+	  \end{tabular}
+	  \caption{The distribution of the \textit{iscjretained} target variable classes
+	    in the different datasets.}
+	  \label{tab:datasetretention}
+	\end{table}
+\end{frame}
+
+\begin{frame}{Deployment}{Problem Analysis}
+	\begin{itemize}
+		\item Deployment was not done during this project.
+		\item Mail 2.0
+		\item Possible design mentioned Future Work.
+	\end{itemize}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Results}
+
+\begin{frame}{Results}
+	\begin{table}[H]
+	  \centering
+	  \begin{tabular}{l|l}
+	    \textbf{Maximum Depth} & \textbf{Accuracy} \\ \hline
+	    $4$                    & $92.84039$ \%     \\
+	    $6$                    & $92.84846$ \%     \\
+	    $8$                    & $92.75823$ \%
+	  \end{tabular}
+	  \caption{The results of the final datarun when training on the full training
+	    set and trying to predict the entire test set.}
+	  \label{tab:results00}
+	\end{table}
+\end{frame}
+
+\begin{frame}{Results}
+	\graphicc{1}{img/results_00}{The comditional inference tree produced by the
+   		code when using a maximum depth of 4.}{fig:results00}
+\end{frame}
+
+\begin{frame}{Results}
+	\begin{table}[H]
+	  \centering
+	  \begin{tabular}{l|l}
+	    \textbf{Maximum Depth} & \textbf{Accuracy} \\ \hline
+	    $4$                    & $91.79051$ \%     \\
+	    $6$                    & $91.74852$ \%     \\
+	    $8$                    & $91.74388$ \%
+	  \end{tabular}
+	  \caption{The results of the final data run when training on the full training
+	    set excluding the \textit{logins14 variable} and trying to predict the
+	    entire test set.}
+	  \label{tab:results01}
+	\end{table}
+\end{frame}
+
+\begin{frame}{Results}
+	\graphicc{1}{img/results_01}{The conditional inference tree produced by the
+    	code when using a maximum depth of 4 and exluding the \textit{logins14}
+    	attribute.}{fig:results01}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion and Future Work}
+
+\begin{frame}{Future Work}{Conclusion and Future Work}
+	\begin{itemize}
+		\item Better datasets.
+		\item Rough design of automated solution.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Conclusion}{Conclusion and Future Work}
+	\begin{itemize}
+		\item TODO: Conclude things in here as well.
+	\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Question}
+
+\begin{frame}{Questions}
+	\begin{itemize}
+		\item Questions.
+	\end{itemize}
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\begin{frame}[allowframebreaks=0.9]{References}
+%\printbibliography
+%\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
